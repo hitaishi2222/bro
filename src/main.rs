@@ -41,7 +41,7 @@ struct Cli {
     #[arg(
         short,
         long="rd",
-        help = "Rust documentation search",
+        help = "Rust documentation std search",
         aliases = ["rust-doc", "rustdoc"],
         required = false
     )]
@@ -78,7 +78,10 @@ fn main() {
         args.browse("https://github.com/search?q=");
     } else if args.youtube {
         args.browse("https://www.youtube.com/results?search_query=");
-    } else {
+    } else if args.rust_doc {
+        args.browse("https://doc.rust-lang.org/stable/std/?search=");
+    }
+    else {
         if args.query.join("").contains(&"htt".to_string()) {
             args.browse("");
         } else {
