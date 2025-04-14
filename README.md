@@ -27,9 +27,15 @@ Arguments:
 
 Options:
 -g, --google Google search
+
 -s, --google-scholar Google Scholar search
+
 -G, --github Github Repositories search
+
 -y, --youtube Youtube search
+
 -r, --rd Rust documentation std search
+
 -h, --help Print help
+
 -V, --version Print version

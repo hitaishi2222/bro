@@ -57,23 +57,28 @@ impl Cli {
     }
 
     fn browse(&self, base_url: &str) {
-        let cmd;
-        let os = env::consts::OS; 
-        if os == "linux" {
-            cmd = "xdg-open";
-        } else if os == "windows"{
-            cmd = "start"
-        }else if os == "macos" {
-            cmd = "open"
-        } else {
-            cmd = "echo"
-        }
-        process::Command::new(cmd)
-            .arg(&self.make_url(base_url))
-            .output()
-            // .spawn()
-            .expect("Error running the command...");
+        let url = self.make_url(base_url);
+        let os = env::consts::OS;
 
+        if os == "windows" {
+            process::Command::new("cmd")
+                .args(&["/C", "start", "", &url])
+                .spawn()
+                .expect("Error running the command on Windows...");
+        } else {
+            let cmd = if os == "linux" {
+                "xdg-open"
+            } else if os == "macos" {
+                "open"
+            } else {
+                "echo"
+            };
+
+            process::Command::new(cmd)
+                .arg(&url)
+                .spawn()
+                .expect("Error running the command...");
+        }
     }
 }
 
