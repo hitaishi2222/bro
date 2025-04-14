@@ -2,5 +2,7 @@
 name = "bro"
 version = "0.1.0"
 edition = "2024"
+description = "CLI shorcut tool to open/search on different websites on your browser."
 
 [dependencies]
+clap = { version = "4.5.36", features = ["cargo", "derive"] }

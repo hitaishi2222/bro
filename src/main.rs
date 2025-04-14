@@ -1,105 +1,88 @@
-use std::{env, process::Command};
+use std::process;
 
-#[derive(Debug)]
-struct Url {
-    base_url: String,
-    args: Vec<String>,
-    tag: String,
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    #[arg(value_name = "query", required = true)]
+    query: Vec<String>,
+
+    #[arg(short, long, help = "Google search", required = false)]
+    google: bool,
+
+    #[arg(
+        short = 's',
+        long,
+        help = "Google Scholar search",
+        aliases = [ "google-scholar", "googlescholar" ],
+        required = false
+    )]
+    google_scholar: bool,
+
+    #[arg(
+        short = 'G',
+        long,
+        help = "Github Repositories search",
+        aliases = ["git-hub"],
+        required = false
+    )]
+    github: bool,
+
+    #[arg(
+        short, 
+        long,
+        help = "Youtube search",
+        aliases = ["you-tube"],
+        required = false
+    )]
+    youtube: bool,
+
+    #[arg(
+        short,
+        long="rd",
+        help = "Rust documentation search",
+        aliases = ["rust-doc", "rustdoc"],
+        required = false
+    )]
+    rust_doc: bool,
 }
 
-impl Url {
-    fn new(arguments: Vec<String>) -> Self {
-        let mut base_url = String::new();
-        let mut tag = String::new();
-        let mut args: Vec<String> = arguments;
-
-        if args.len() == 1 {
-            eprintln!("Need url or arguments");
-        } else if args.len() == 2 {
-            base_url = args.get(1).unwrap().to_string();
-            args = vec!["".to_string()];
-        } else if args.get(1).unwrap().contains("-") {
-            tag = args.get(1).unwrap().to_string();
-            args.remove(0);
-            args.remove(0);
-            args = args;
-        } else {
-            eprintln!("...syntax error...");
-        }
-        Url {
-            base_url,
-            args,
-            tag,
-        }
-    }
-
+impl Cli {
     fn make_url(&self, base_url: &str) -> String {
-        let mut url = String::new();
-        println!("... {}", url);
-        if self.tag.is_empty() {
-            url = format!("{}", &self.base_url);
-        } else {
-            let url_args = self.args.join("+");
-            url = format!("{}{}", base_url, url_args);
+        if self.query.contains(&"http".to_string()) {
+            return self.query.join("");
         }
-        if url.contains("http") {
-            return url;
-        } else {
-            eprintln!("Url not found");
-            return format!("Invalid url: {}", url);
-        }
+        format!("{}{}", base_url, self.query.join("+"))
     }
 
     fn browse(&self, base_url: &str) {
-        Command::new("xdg-open")
+        process::Command::new("xdg-open")
             .arg(&self.make_url(base_url))
             .output()
             // .spawn()
             .expect("Error running the command...");
+
     }
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    match args.get(1).unwrap().as_str() {
-        "-g" => {
-            let google = Url::new(args);
-            google.browse("https://google.com/search?q=");
-        }
-        "-y" => {
-            let youtube = Url::new(args);
-            youtube.browse("https://www.youtube.com/results?search_query=");
-        }
-        "-gs" => {
-            let scholar = Url::new(args);
-            scholar.browse("https://scholar.google.com/scholar?q=");
-        }
-        "-gh" => {
-            let github = Url::new(args);
-            github.browse("https://github.com/search?q=");
-        }
-        "help" | "-h" => {
-            help();
-        }
-        _ => {
-            let website = Url::new(args);
-            website.browse(website.base_url.as_str());
+    let args = Cli::parse();
+    if args.query.is_empty() {
+        eprintln!(">> No input detected: use -h or --help");
+    } else if args.google {
+        args.browse("https://google.com/search?q=");
+    } else if args.google_scholar {
+        args.browse("https://scholar.google.com/scholar?q=");
+    } else if args.github {
+        args.browse("https://github.com/search?q=");
+    } else if args.youtube {
+        args.browse("https://www.youtube.com/results?search_query=");
+    } else {
+        if args.query.join("").contains(&"htt".to_string()) {
+            args.browse("");
+        } else {
+            eprintln!("Not a valid URL")
         }
     }
-}
-
-fn help() {
-    println!(
-        r#"
-    Usage: <TAG> <ARGS>
-    Example: -g why rust is best?
-    -----------------------------
-    [ just use url to visit with no tags ]
-    Use tags for specific websites:
-    -y  -> Youtube
-    -g  -> Google Search
-    -gs -> Google Scholar
-    -gh -> Github
-    "#
-    )
 }
