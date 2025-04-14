@@ -1,4 +1,4 @@
-use std::process;
+use std::{env, process};
 
 use clap::Parser;
 
@@ -57,7 +57,18 @@ impl Cli {
     }
 
     fn browse(&self, base_url: &str) {
-        process::Command::new("xdg-open")
+        let cmd;
+        let os = env::consts::OS; 
+        if os == "linux" {
+            cmd = "xdg-open";
+        } else if os == "windows"{
+            cmd = "start"
+        }else if os == "macos" {
+            cmd = "open"
+        } else {
+            cmd = "echo"
+        }
+        process::Command::new(cmd)
             .arg(&self.make_url(base_url))
             .output()
             // .spawn()
@@ -65,6 +76,7 @@ impl Cli {
 
     }
 }
+
 
 fn main() {
     let args = Cli::parse();
