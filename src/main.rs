@@ -12,6 +12,15 @@ struct Cli {
     google: bool,
 
     #[arg(
+        short = 'S',
+        long,
+        help = "Sci-Hub PDF search",
+        aliases = [ "scihub", "sci-hub" ],
+        required = false
+    )]
+    sci_hub: bool,
+
+    #[arg(
         short = 's',
         long,
         help = "Google Scholar search",
@@ -97,6 +106,8 @@ fn main() {
         args.browse("https://www.youtube.com/results?search_query=");
     } else if args.rust_doc {
         args.browse("https://doc.rust-lang.org/stable/std/?search=");
+    } else if args.sci_hub {
+        args.browse("https://pismin.com/");
     }
     else {
         if args.query.join("").contains(&"htt".to_string()) {
