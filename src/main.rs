@@ -12,13 +12,13 @@ struct Cli {
     google: bool,
 
     #[arg(
-        short = 'S',
+        short = 'G',
         long,
-        help = "Sci-Hub PDF search",
-        aliases = [ "scihub", "sci-hub" ],
+        help = "Github Repositories search",
+        aliases = ["git-hub"],
         required = false
     )]
-    sci_hub: bool,
+    github: bool,
 
     #[arg(
         short = 's',
@@ -30,13 +30,31 @@ struct Cli {
     google_scholar: bool,
 
     #[arg(
-        short = 'G',
+        short = 'S',
         long,
-        help = "Github Repositories search",
-        aliases = ["git-hub"],
+        help = "Sci-Hub PDF search",
+        aliases = [ "scihub", "sci-hub" ],
         required = false
     )]
-    github: bool,
+    sci_hub: bool,
+
+    #[arg(
+        short = 'p',
+        long,
+        help = "Pintrest pins",
+        aliases = ["pintrest",  "pins"],
+        required = false
+    )]
+    pintrest: bool,
+
+    #[arg(
+        short = 'P',
+        long,
+        help = "Google Patents search",
+        aliases = ["patents",  "patent"],
+        required = false
+    )]
+    patents: bool,
 
     #[arg(
         short, 
@@ -108,7 +126,11 @@ fn main() {
         args.browse("https://doc.rust-lang.org/stable/std/?search=");
     } else if args.sci_hub {
         args.browse("https://pismin.com/");
-    }
+    } else if args.pintrest {
+        args.browse("https://pinterest.com/search/pins/?q=");
+    } else if args.patents {
+        args.browse("https://patents.google.com/?q=");
+    } 
     else {
         if args.query.join("").contains(&"htt".to_string()) {
             args.browse("");
