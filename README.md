@@ -39,3 +39,7 @@ Options:
 -h, --help Print help
 
 -V, --version Print version
+
+## License
+
+MIT — see [LICENSE](LICENSE).
